@@ -8,8 +8,10 @@ $app->config('debug', true);
 
 $app->get('/', function() {
     
-	echo "OK";
+	$sql = new Hcode\DB\sql();
+	$results = $sql->select("SELECT * from tb_users");
 
+	echo json_encode($results);
 });
 
 $app->run();
