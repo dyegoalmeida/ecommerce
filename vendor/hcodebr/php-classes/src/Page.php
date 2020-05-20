@@ -12,7 +12,7 @@ class Page {
 		"data"=>[]
 	];
 
-	public function __construct($opts = array()){
+	public function __construct($opts = array(), $tpl_dir = "/views/"){
 		
 		/*
 	      array_merge: Funde os elementos de dois ou mais arrays de forma que os elementos de um são 
@@ -20,7 +20,7 @@ class Page {
 		*/
 		$this->options = array_merge($this->defaults, $opts);
 		$config = array(
-						"tpl_dir"       => $_SERVER["DOCUMENT_ROOT"]."/views/", //Pega os arquivos HTML
+						"tpl_dir"       => $_SERVER["DOCUMENT_ROOT"].$tpl_dir, //Busca os arquivos HTML
 						"cache_dir"     => $_SERVER["DOCUMENT_ROOT"]."/views-cache/",// Pasta para cache 
 						"debug"         => false // set to false to improve the speed
 					   );
