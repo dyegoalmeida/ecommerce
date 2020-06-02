@@ -53,6 +53,84 @@ $app->get('/admin/logout', function () {
 
 });
 
+$app->get("/admin/users", function() {
+
+	User::verifyLogin();
+
+	$users = User::listAll();
+	$page = new PageAdmin();
+	$page->setTpl("users", array(
+				  "users"=>$users	
+	));
+
+});
+//Rota da página
+$app->get("/admin/users/create", function() {
+
+	User::verifyLogin();
+	$page = new PageAdmin();
+	//Nome do arquivo da página users-create.html
+	$page->setTpl("users-create");
+
+});
+
+$app->get("/admin/users/:iduser/delete", function($iduser) {
+
+	User::verifyLogin();
+
+	$user = new User();
+	$user->get((int)$iduser);
+	$user->delete();
+
+	header("Location: /admin/users");
+	exit;
+});
+
+//Já envia o ID do usuário que queira carregar via parâmetro na rota
+$app->get("/admin/users/:iduser", function($iduser) {
+
+	User::verifyLogin();
+	$user = new User();
+	$user->get((int)$iduser);
+
+	$page = new PageAdmin();
+	$page->setTpl("users-update", array(
+		          "user"=>$user->getValues()));
+
+});
+
+$app->post("/admin/users/create", function() {
+
+	User::verifyLogin();
+
+	$user = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->setData($_POST);
+	$user->save();
+
+	header("Location: /admin/users");
+	exit;
+
+});
+
+$app->post("/admin/users/:iduser", function($iduser) {
+
+	User::verifyLogin();
+
+	$user = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->get((int)$iduser);
+	$user->setData($_POST);
+	$user->update();
+
+	header("Location: /admin/users");
+	exit;
+});
+
 $app->run();
 
 ?>
