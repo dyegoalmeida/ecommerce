@@ -319,6 +319,31 @@ class User extends Model {
 
 	}
 
+	public static function setErrorRegister($msg){
+
+		$_SESSION[User::ERROR_REGISTER] = $msg;
+
+	}
+
+	public static function getErrorRegister(){
+
+		/*
+		Verifica se já está na sessão, se ele existe e se não está vazio. Se existir retorno ele senão retorno uma string vazia
+		*/
+		$msg = (isset($_SESSION[User::ERROR_REGISTER]) && 
+			          $_SESSION[User::ERROR_REGISTER]) ?
+			          $_SESSION[User::ERROR_REGISTER] : '';
+
+		User::clearErrorRegister();
+		return $msg;
+	}
+
+	public static function clearErrorRegister(){
+
+		$_SESSION[User::ERROR_REGISTER] = NULL;
+
+	}
+
 	public static function checkLoginExist($login){
 
 		$sql = new Sql();
