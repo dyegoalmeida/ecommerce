@@ -12,6 +12,7 @@ class User extends Model {
 	const SECRET  		 = "HcodePhp7_Secret";
 	const ERROR   		 = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
+	const SUCCESS = "UserSucess";
 
 	public static function getFromSession(){
 
@@ -130,7 +131,7 @@ class User extends Model {
  		$data = $results[0];
     	$data['desperson'] = utf8_encode($data['desperson']);
 		$this->setData($data);
-		
+
 	}
 
 	public function save() {
@@ -172,18 +173,18 @@ class User extends Model {
 		pnrphone BIGINT, 
 		pinadmin TINYINT
 		*/
-		$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, 		                     :despassword, :desemail, :nrphone, :inadmin)", 
-						  array(
-									":iduser"=>$this->getiduser(),
-									":desperson"=>utf8_decode($this->getdesperson()),
-									":deslogin"=>$this->getdeslogin(),
-									":despassword"=>User::getPasswordHash($this->getdespassword()),
-									":desemail"=>$this->getdesemail(),
-									":nrphone"=>$this->getnrphone(),
-									":inadmin"=>$this->getinadmin()
+		$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", 
+		    array(
+					":iduser"=>$this->getiduser(),
+					":desperson"=>utf8_decode($this->getdesperson()),
+					":deslogin"=>$this->getdeslogin(),
+					":despassword"=>User::getPasswordHash($this->getdespassword()),
+					":desemail"=>$this->getdesemail(),
+					":nrphone"=>$this->getnrphone(),
+					":inadmin"=>$this->getinadmin()
 		));
 
-		$this->setData($results[0]);
+		$this->setData($results);
 
 	}
 
@@ -341,6 +342,26 @@ class User extends Model {
 	public static function clearErrorRegister(){
 
 		$_SESSION[User::ERROR_REGISTER] = NULL;
+
+	}
+
+		public static function setSuccess($msg){
+
+		$_SESSION[User::SUCCESS]  = $msg;
+
+	}
+
+	public static function getSuccess(){
+
+		return (isset($_SESSION[User::SUCCESS])) ? $_SESSION[User::SUCCESS] : "";
+		User::clearMsgError();
+		return $msg;
+
+	}
+
+	public static function clearSuccess(){
+
+		$_SESSION[User::SUCCESS] = NULL;
 
 	}
 
