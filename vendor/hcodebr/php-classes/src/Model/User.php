@@ -121,20 +121,16 @@ class User extends Model {
 	public function get($iduser)
 	{
 	 
-		 $sql = new Sql();
+		$sql = new Sql();
 		 
-		 $results = $sql->select("SELECT * FROM tb_users a 
-		 						  INNER JOIN tb_persons b USING(idperson)
-		 						  WHERE a.iduser = :iduser;", array(":iduser"=>$iduser));
+		$results = $sql->select("SELECT * FROM tb_users a 
+		   					     INNER JOIN tb_persons b USING(idperson)
+		 						 WHERE a.iduser = :iduser;", array(":iduser"=>$iduser));
 		 
-		 $results['desperson'] = utf8_encode($results['desperson']);
-		 $this->setData($results[0]);
-		 /*
-		 $data = $results[0];
-		 
-		 $user = new User();
-		 $user->setData($data);
-		 */
+ 		$data = $results[0];
+    	$data['desperson'] = utf8_encode($data['desperson']);
+		$this->setData($data);
+		
 	}
 
 	public function save() {
@@ -200,7 +196,7 @@ class User extends Model {
 			));
 	}
 
-	public static function getForgot($email){
+	public static function getForgot($email, $inadmin = true){
 
 		$sql = new Sql();
 
@@ -233,7 +229,11 @@ class User extends Model {
 									                                0,
 									                                SECRET_IV));
 
-				$link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
+				if ($inadmin === true){
+					$link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";	
+				} else {
+					$link = "http://www.hcodecommerce.com.br/forgot/reset?code=$code";	
+				}
 
 				$mailer = new Mailer($data["desemail"],
 									 $data["desperson"],
