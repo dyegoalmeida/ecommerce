@@ -135,15 +135,89 @@ $app->get("/checkout", function(){
 
 	User::verifyLogin(false);
 
-	//Recupera o carrinho que está na sessão
-	$cart = Cart::getFromSession();
 	$address = new Address();
+    //Recupera o carrinho que está na sessão
+	$cart = Cart::getFromSession();
+
+	//Se não estiver iniciada o ZIPCODE, recebe o ZIPCODE do Cart.
+	if (!isset($_GET['zipcode'])) {
+		$_GET['zipcode'] = $cart->getdeszipcode();
+	}
+
+	if (isset($_GET['zipcode'])){
+		//Nesse momento o objeto Address é carregado com o endereço.
+		$address->loadFromCEP($_GET['zipcode']);
+
+		$cart->setdeszipcode($_GET['zipcode']);
+		$cart->save();
+		$cart->getCalculateTotal();
+	}
 	
-	$page = new Page();
+	if (!$address->getdesaddress()) $address->setdesaddress('');
+	if (!$address->getdescomplement()) $address->setdescomplement('');
+	if (!$address->getdesdistrict()) $address->setdesdistrict('');
+	if (!$address->getdescity()) $address->setdescity('');
+	if (!$address->getdesstate()) $address->setdesstate('');
+	if (!$address->getdescountry()) $address->setdescountry('');
+	if (!$address->getdeszipcode()) $address->setdeszipcode('');
+    
+    $page = new Page();
 	$page->setTpl("checkout", [
 		'cart'=>$cart->getValues(),
-		'address'=>$address->getValues()
+		'address'=>$address->getValues(),
+		'products'=>$cart->getProducts(),
+		'error'=>Address::getMsgError()
 	]);
+});
+
+$app->post("/checkout", function(){
+
+	User::verifyLogin(false);
+
+	if (!isset($_POST['zipcode']) || $_POST['zipcode'] === ''){
+		Address::setMsgErro("Informe o CEP!");
+		header('Location: /checkout');
+		exit;
+	}
+
+	if (!isset($_POST['desaddress']) || $_POST['desaddress'] === ''){
+		Address::setMsgErro("Informe o Endereço!");
+		header('Location: /checkout');
+		exit;
+	}
+
+	if (!isset($_POST['desdistrict']) || $_POST['desdistrict'] === ''){
+		Address::setMsgErro("Informe o Bairro!");
+		header('Location: /checkout');
+		exit;
+	}
+
+	if (!isset($_POST['descity']) || $_POST['descity'] === ''){
+		Address::setMsgErro("Informe a Cidade!");
+		header('Location: /checkout');
+		exit;
+	}
+
+	if (!isset($_POST['desstate']) || $_POST['desstate'] === ''){
+		Address::setMsgErro("Informe o Estado!");
+		header('Location: /checkout');
+		exit;
+	}
+
+	$user = User::getFromSession();
+	$address = new Address();
+	
+	$_POST['deszipcode'] = $_POST['zipcode'];
+	$_POST['idperson'] = $user->getidperson();
+
+	$address->setData($_POST);	
+	$address->save();
+
+	$cart = Cart::getFromSession();
+	$cart->getCalculateTotal();
+
+	header("Location: /order");
+	exit;
 });
 
 $app->get("/login", function(){
