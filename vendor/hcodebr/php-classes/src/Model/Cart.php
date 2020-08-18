@@ -93,7 +93,6 @@ class Cart extends Model {
 	}
 
 	public function addProduct(Product $product){
-		echo "Aqui";
 		$sql = new Sql();
 		$sql->query("INSERT INTO tb_cartsproducts (idcart, idproduct) VALUES (:idcart, :idproduct)", [
 			':idcart'=>$this->getidcart(),
