@@ -383,5 +383,29 @@ class User extends Model {
 
 	}
 
+	public function getOrders($idorder){
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+						SELECT *
+						FROM tb_orders A
+						INNER JOIN tb_ordersstatus B USING(IDSTATUS)
+						INNER JOIN tb_carts C USING(IDCART)
+						INNER JOIN TB_USERS D ON D.IDUSER = A.iduser
+						INNER JOIN tb_addresses E USING(IDADDRESS)
+						INNER JOIN tb_persons F ON F.idperson = D.idperson
+						WHERE A.iduser = :iduser
+						", [
+							  ':iduser'=>$this->getiduser()
+						]);
+
+		if (count($results) > 0){
+			$this->setData($results[0]);
+		}
+
+		return $results;
+	}
+
 }
 ?>
