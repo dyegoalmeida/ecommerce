@@ -14,6 +14,11 @@
 --></style>
 </head>
 
+<?php
+  $valor = (float) $dadosboleto["valor_boleto"];
+  $dadosboleto["valor_boleto"] = number_format($valor, 2, ',', '.');
+?>
+
 <BODY text=#000000 bgColor=#ffffff topMargin=0 rightMargin=0>
 <table width=666 cellspacing=0 cellpadding=0 border=0><tr><td valign=top class=cp><DIV ALIGN="CENTER">Instruções
 de Impressão</DIV></TD></TR><TR><TD valign=top class=cp><DIV ALIGN="left">

@@ -238,7 +238,7 @@ class Cart extends Model {
 
 		if ($this->getdeszipcode() != ''){
 			$this->setFreight($this->getdeszipcode());
-		}
+		} 
 	}
 
 	public function getValues(){

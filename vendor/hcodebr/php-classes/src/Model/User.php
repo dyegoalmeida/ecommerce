@@ -16,9 +16,10 @@ class User extends Model {
 
 	public static function getFromSession(){
 
+		$user = new User();
+		
 		if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0) {
 
-			$user = new User();
 			$user->setData($_SESSION[User::SESSION]);
 
 		}
@@ -173,6 +174,7 @@ class User extends Model {
 		pnrphone BIGINT, 
 		pinadmin TINYINT
 		*/
+
 		$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", 
 		    array(
 					":iduser"=>$this->getiduser(),
@@ -302,21 +304,23 @@ class User extends Model {
 
 	public static function setError($msg){
 
-		$_SESSION[Cart::SESSION_ERROR]  = $msg;
+		$_SESSION[User::ERROR]  = $msg;
 
 	}
 
 	public static function getError(){
 
-		return (isset($_SESSION[Cart::SESSION_ERROR])) ? $_SESSION[Cart::SESSION_ERROR] : "";
-		User::clearMsgError();
+		$msg = (isset($_SESSION[User::ERROR]) && $_SESSION[User::ERROR]) ? $_SESSION[User::ERROR] : '';
+
+		User::clearError();
+		
 		return $msg;
 
 	}
 
 	public static function clearError(){
 
-		$_SESSION[Cart::SESSION_ERROR] = NULL;
+		$_SESSION[User::ERROR] = NULL;
 
 	}
 
@@ -345,7 +349,7 @@ class User extends Model {
 
 	}
 
-		public static function setSuccess($msg){
+	public static function setSuccess($msg){
 
 		$_SESSION[User::SUCCESS]  = $msg;
 
@@ -353,8 +357,10 @@ class User extends Model {
 
 	public static function getSuccess(){
 
-		return (isset($_SESSION[User::SUCCESS])) ? $_SESSION[User::SUCCESS] : "";
-		User::clearMsgError();
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+		
+		User::clearSuccess();
+		
 		return $msg;
 
 	}
