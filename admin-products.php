@@ -8,11 +8,41 @@ $app->get("/admin/products", function(){
 
 	User::verifyLogin();
 
-	$products = Product::listAll();
+	$search = (isset($_GET['search'])) ? $_GET['search'] : "";
+	$page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+
+	/*
+		Não passamos o parâmetro dos itens por página, por padrão irá aparecer
+		a paginação somente quando tiver mais que 10 itens por página.
+	*/
+	if ($search != '') {
+
+		$pagination = Product::getPageSearch($search,$page);
+
+	} else {
+
+		$pagination = Product::getPage($page);
+
+	}
+
+	$pages = [];
+
+	for ($x=0; $x < $pagination['pages'] ; $x++) { 
+		
+		array_push($pages,[
+			'href'=>'/admin/product?' . http_build_query([
+			'page'=>$x+1,
+			'search'=>$search
+			]),
+			'text'=>$x+1
+		]);
+	}
 
 	$page = new PageAdmin();
 	$page->setTpl("products", [ 
-				  "products"=>$products]);
+				  "products"=>$pagination['data'],
+				  "search"=>$search,
+				  "pages"=>$pages]);
 
 });
 
