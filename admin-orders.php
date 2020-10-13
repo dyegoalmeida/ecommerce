@@ -75,10 +75,41 @@ $app->get("/admin/orders", function(){
 
 	User::verifyLogin();
 
+	$search = (isset($_GET['search'])) ? $_GET['search'] : "";
+	$page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+
+	/*
+		Não passamos o parâmetro dos itens por página, por padrão irá aparecer
+		a paginação somente quando tiver mais que 10 itens por página.
+	*/
+	if ($search != '') {
+
+		$pagination = Order::getPageSearch($search,$page);
+
+	} else {
+
+		$pagination = Order::getPage($page);
+
+	}
+
+	$pages = [];
+
+	for ($x=0; $x < $pagination['pages'] ; $x++) { 
+		
+		array_push($pages,[
+			'href'=>'/admin/orders?' . http_build_query([
+			'page'=>$x+1,
+			'search'=>$search
+			]),
+			'text'=>$x+1
+		]);
+	}
+
 	$page = new pageAdmin();
 	$page->setTpl("orders", [
-		"orders"=>Order::listAll()
-
+		"orders"=>$pagination['data'],
+		"search"=>$search,
+		"pages"=>$pages
 	]);
 
 });
